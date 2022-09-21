@@ -540,6 +540,12 @@ fb_actions.goto_parent_dir = function(prompt_bufnr, bypass)
   finder.path = parent_dir
   fb_utils.redraw_border_title(current_picker)
   current_picker:refresh(finder, { reset_prompt = true, multi = current_picker._multi })
+  current_picker:register_completion_callback(function()
+      local selection_index = find_entry(current_picker, file.filename)
+      vim.defer_fn(function() current_picker:set_selection(current_picker:get_row(selection_index)) end, 10)
+      local num_cb = #current_picker._completion_callbacks
+      current_picker._completion_callbacks[num_cb] = nil
+    end)
 end
 
 --- Goto working directory of nvim in |telescope-file-browser.picker.file_browser|.
