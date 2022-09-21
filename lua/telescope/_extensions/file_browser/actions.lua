@@ -110,6 +110,12 @@ fb_actions.create = function(prompt_bufnr)
       path = file:is_dir() and path:sub(1, -2) or path
       fb_utils.selection_callback(current_picker, path)
       current_picker:refresh(finder, { reset_prompt = true, multi = current_picker._multi })
+      current_picker:register_completion_callback(function()
+      local selection_index = find_entry(current_picker, file.filename)
+      vim.defer_fn(function() current_picker:set_selection(current_picker:get_row(selection_index)) end, 10)
+      local num_cb = #current_picker._completion_callbacks
+      current_picker._completion_callbacks[num_cb] = nil
+    end)
     end
   end)
 end
